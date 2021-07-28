@@ -24,6 +24,13 @@ const getNotes = (userId) => {
 
 const renderDataAsHtml = (data) => {
   let cards = ``;
+  let dataArray = [];
+  for (const noteItem in data) {
+    const note = data[noteItem];
+    // For each note create an HTML card
+    dataArray += note.title
+  };
+  dataArray.sort();
   for (const noteItem in data) {
     const note = data[noteItem];
     // For each note create an HTML card
@@ -68,6 +75,7 @@ const editNote = (noteId) => {
         const note = data[noteId];
         document.querySelector("#editTitleInput").value = note.title;
         document.querySelector("#editTextInput").value = note.text;
+        document.querySelector("#editNoteId").value = noteId;
     });
     editNoteModal.classList.toggle("is-active");
 }
@@ -80,9 +88,11 @@ const closeEditModal = () => {
 const saveEdittedNote = () => {
     const noteTitle = document.querySelector("#editTitleInput").value;
     const noteText = document.querySelector("#editTextInput").value;
+    const noteId = document.querySelector("#editNoteId").value;
     const noteEdits = {
         title: noteTitle,
         text: noteText
     }
     firebase.database().ref(`users/${googleUserId}/${noteId}`).update(noteEdits);
+    closeEditModal();
 }
