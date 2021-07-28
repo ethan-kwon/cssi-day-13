@@ -61,7 +61,7 @@ const createCard = (title, text, noteId) => {
             <a href="#" class="card-footer-item" onclick="editNote('${noteId}')">
                 Edit
             </a>
-            <a href="#" class="card-footer-item" onclick="deleteNote('${noteId}')">
+            <a href="#" class="card-footer-item" onclick="deleteNoteModal('${noteId}')">
                 Delete
             </a>
         </footer>
@@ -70,8 +70,21 @@ const createCard = (title, text, noteId) => {
   `;
 }
 
-const deleteNote = (noteId) => {
+const closeDeleteModal = () => {
+    const deleteModal = document.querySelector("#deleteNoteModal");
+    deleteModal.classList.toggle("is-active");
+}
+
+const deleteNote = () => {
+    const noteId = document.querySelector("#deleteNoteId").value;
     firebase.database().ref(`users/${googleUserId}/${noteId}`).remove();
+    closeDeleteModal();
+}
+
+const deleteNoteModal = (noteId) => {
+    const deleteModal = document.querySelector("#deleteNoteModal");
+    document.querySelector("#deleteNoteId").value = noteId;
+    deleteModal.classList.toggle("is-active");
 }
 
 const editNote = (noteId) => {
