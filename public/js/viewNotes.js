@@ -27,28 +27,35 @@ const renderDataAsHtml = (data) => {
   let dataArray = [];
   for (const noteItem in data) {
     const note = data[noteItem];
-    // For each note create an HTML card
-    dataArray += note.title
+    const noteInformation = {
+        title: note.title,
+        text: note.text,
+        id: noteItem
+    }
+    dataArray.push(noteInformation);
   };
-  dataArray.sort();
-  for (const noteItem in data) {
-    const note = data[noteItem];
+  dataArray.sort(function(a, b) {
+    var textA = a.title.toUpperCase();
+    var textB = b.title.toUpperCase();
+    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+    });
+  for (const noteItem in dataArray) {
     // For each note create an HTML card
-    cards += createCard(note, noteItem)
+    cards += createCard(dataArray[noteItem].title, dataArray[noteItem].text, dataArray[noteItem].id);
   };
   // Inject our string of HTML into our viewNotes.html page
   document.querySelector('#app').innerHTML = cards;
 };
 
-const createCard = (note, noteId) => {
+const createCard = (title, text, noteId) => {
   return `
     <div class="column is-one-quarter">
       <div class="card">
         <header class="card-header">
-          <p class="card-header-title">${note.title}</p>
+          <p class="card-header-title">${title}</p>
         </header>
         <div class="card-content">
-          <div class="content">${note.text}</div>
+          <div class="content">${text}</div>
         </div>
         <footer class="card-footer">
             <a href="#" class="card-footer-item" onclick="editNote('${noteId}')">
