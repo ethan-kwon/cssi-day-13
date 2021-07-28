@@ -27,13 +27,13 @@ const renderDataAsHtml = (data) => {
   for (const noteItem in data) {
     const note = data[noteItem];
     // For each note create an HTML card
-    cards += createCard(note)
+    cards += createCard(note, noteItem)
   };
   // Inject our string of HTML into our viewNotes.html page
   document.querySelector('#app').innerHTML = cards;
 };
 
-const createCard = (note) => {
+const createCard = (note, noteId) => {
   return `
     <div class="column is-one-quarter">
       <div class="card">
@@ -43,7 +43,46 @@ const createCard = (note) => {
         <div class="card-content">
           <div class="content">${note.text}</div>
         </div>
+        <footer class="card-footer">
+            <a href="#" class="card-footer-item" onclick="editNote('${noteId}')">
+                Edit
+            </a>
+            <a href="#" class="card-footer-item" onclick="deleteNote('${noteId}')">
+                Delete
+            </a>
+        </footer>
       </div>
     </div>
   `;
+}
+
+const deleteNote = (noteId) => {
+    firebase.database().ref(`users/${googleUserId}/${noteId}`).remove();
+}
+
+const editNote = (noteId) => {
+    const editNoteModal = document.querySelector("#editNoteModal");
+    const notesRef = firebase.database().ref(`users/${googleUserId}`);
+    notesRef.on("value", (snapshot) => {
+        const data = snapshot.val();
+        const note = data[noteId];
+        document.querySelector("#editTitleInput").value = note.title;
+        document.querySelector("#editTextInput").value = note.text;
+    });
+    editNoteModal.classList.toggle("is-active");
+}
+
+const closeEditModal = () => {
+    const editNoteModal = document.querySelector("#editNoteModal");
+    editNoteModal.classList.toggle("is-active");
+}
+
+const saveEdittedNote = () => {
+    const noteTitle = document.querySelector("#editTitleInput").value;
+    const noteText = document.querySelector("#editTextInput").value;
+    const noteEdits = {
+        title: noteTitle,
+        text: noteText
+    }
+    firebase.database().ref(`users/${googleUserId}/${noteId}`).update(noteEdits);
 }
